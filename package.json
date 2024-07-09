@@ -1,0 +1,15 @@
+{
+    "name": "bekterest",
+    "version": "1.0.0",
+    "description": "A Pinterest-like image search app using Pixabay API",
+    "main": "index.html",
+    "scripts": {
+      "start": "serve public"
+    },
+    "dependencies": {
+      "serve": "^13.0.2"
+    },
+    "author": "Your Name",
+    "license": "ISC"
+  }
+  
