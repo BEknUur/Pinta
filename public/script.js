@@ -1,7 +1,10 @@
 const accessKey = "44857553-e24332d64c38856a80a35c488";
-const searchForm = document.getElementById("search-form");
-const searchBox = document.getElementById("search-box");
+const searchFormHero = document.getElementById("search-form-hero");
+const searchBoxHero = document.getElementById("search-box-hero");
 const searchResult = document.getElementById("search-result");
+const categoryFilter = document.getElementById("category-filter");
+const colorFilter = document.getElementById("color-filter");
+const applyFiltersBtn = document.getElementById("apply-filters");
 const scrollToTopBtn = document.getElementById("scrollToTopBtn");
 const modal = document.getElementById("myModal");
 const modalImg = document.getElementById("modal-img");
@@ -11,25 +14,39 @@ let keyword = "";
 let page = 1;
 let isFetching = false;
 
-async function searchImages() {
-    if (isFetching || !keyword) return;
-    isFetching = true;
-    console.log(`Fetching images for keyword: ${keyword} on page: ${page}`);
-    
-    const url = `https://pixabay.com/api/?key=${accessKey}&q=${encodeURIComponent(keyword)}&page=${page}&per_page=20`;
+async function fetchImages(url) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
-        displayImages(data.hits);
+        return data.hits;
     } catch (error) {
         console.error("Error fetching images:", error);
         alert(error.message);
-    } finally {
-        isFetching = false;
+        return [];
     }
+}
+
+async function searchImages() {
+    if (isFetching || !keyword) return;
+    isFetching = true;
+    console.log(`Fetching images for keyword: ${keyword} on page: ${page}`);
+    
+    const category = categoryFilter.value;
+    const color = colorFilter.value;
+    let url = `https://pixabay.com/api/?key=${accessKey}&q=${encodeURIComponent(keyword)}&page=${page}&per_page=20`;
+    if (category) {
+        url += `&category=${category}`;
+    }
+    if (color) {
+        url += `&colors=${color}`;
+    }
+
+    const images = await fetchImages(url);
+    displayImages(images);
+    isFetching = false;
 }
 
 function displayImages(images) {
@@ -58,9 +75,7 @@ function displayImages(images) {
 }
 
 function loadMoreImages() {
-    console.log("Scroll event triggered");
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
-        console.log("Loading more images");
         page++;
         searchImages();
     }
@@ -97,13 +112,19 @@ scrollToTopBtn.addEventListener("click", () => {
     });
 });
 
-searchForm.addEventListener("submit", (e) => {
+searchFormHero.addEventListener("submit", (e) => {
     e.preventDefault();
-    keyword = searchBox.value.trim();
+    keyword = searchBoxHero.value.trim();
     if (!keyword) {
         console.log("Please enter a search term");
         return;
     }
+    page = 1;
+    searchImages();
+});
+
+applyFiltersBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     page = 1;
     searchImages();
 });
