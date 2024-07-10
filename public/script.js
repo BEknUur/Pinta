@@ -2,6 +2,10 @@ const accessKey = "44857553-e24332d64c38856a80a35c488";
 const searchForm = document.getElementById("search-form");
 const searchBox = document.getElementById("search-box");
 const searchResult = document.getElementById("search-result");
+const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+const modal = document.getElementById("myModal");
+const modalImg = document.getElementById("modal-img");
+const closeBtn = document.getElementsByClassName("close")[0];
 
 let keyword = "";
 let page = 1;
@@ -39,6 +43,7 @@ function displayImages(images) {
         const imgElement = document.createElement("img");
         imgElement.src = image.webformatURL;
         imgElement.alt = image.tags;
+        imgElement.onclick = () => openModal(image.largeImageURL);
 
         const downloadLink = document.createElement("a");
         downloadLink.href = image.largeImageURL;
@@ -60,6 +65,37 @@ function loadMoreImages() {
         searchImages();
     }
 }
+
+function openModal(src) {
+    modal.style.display = "block";
+    modalImg.src = src;
+}
+
+function closeModal() {
+    modal.style.display = "none";
+}
+
+closeBtn.onclick = closeModal;
+window.onclick = function(event) {
+    if (event.target === modal) {
+        closeModal();
+    }
+};
+
+window.addEventListener("scroll", () => {
+    if (window.scrollY > 200) {
+        scrollToTopBtn.style.display = "block";
+    } else {
+        scrollToTopBtn.style.display = "none";
+    }
+});
+
+scrollToTopBtn.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
 
 searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
